@@ -1,0 +1,30 @@
+using UnityEngine;
+public class FleeingSheepState : State<Sheep>
+{
+    private static FleeingSheepState instance;
+    public static FleeingSheepState GetInstance()
+    {
+
+        if (instance == null)
+            instance = new FleeingSheepState();
+        return instance;
+    }
+
+    public override void Enter(Sheep owner)
+    {
+        base.Enter(owner);
+        owner.GetSteering.FleeOn(owner.Herde.Wolf.transform);
+    }
+
+    public override void FixedUpdate(Sheep owner)
+    {
+        base.FixedUpdate(owner);
+    }
+
+    public override void Exit(Sheep owner)
+    {
+        base.Exit(owner);
+
+        owner.GetSteering.FleeOff();
+    }
+}

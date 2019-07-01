@@ -1,0 +1,25 @@
+using UnityEngine;
+
+public class GlobalOgreState : State<Ogre>
+{
+    private static GlobalOgreState instance;
+    public static GlobalOgreState GetInstance()
+    {
+        if (instance == null)
+            instance = new GlobalOgreState();
+        return instance;
+    }
+
+    public override void FixedUpdate(Ogre owner)
+    {
+        base.FixedUpdate(owner);
+
+        if(owner.GetCurrentRegion != null)
+        {
+            if (owner.GetCurrentRegion.resourceCount <= 0)
+            {
+                owner.GetFSM.ChangeState(Ogre.states["GoToNewRegionOgreState"]);
+            }
+        }
+    }
+}

@@ -1,0 +1,42 @@
+using UnityEngine;
+
+public class GoToNewRegionOgreState : State<Ogre>
+{
+    private static GoToNewRegionOgreState instance;
+    public static GoToNewRegionOgreState GetInstance()
+    {
+            if (instance == null)
+                instance = new GoToNewRegionOgreState();
+            return instance;
+    }
+
+    public override void Enter(Ogre owner)
+    {
+        base.Enter(owner);
+        Debug.Log("Enters GoToNewRegion...");
+        owner.ResetRegion();
+        owner.FindPromisingRegion();
+        Vector3 regionCenter = owner.GetCurrentRegion.bounding.center;
+        owner.GetSteering.PathFollowOn(regionCenter);
+
+		MessageEventArgs e = new MessageEventArgs();
+        e.Sender = owner;
+        e.Message = Region.FOUND_NEW_REGION;
+        EntityMessenger.SendMessage(e);
+    }
+
+    public override void FixedUpdate(Ogre owner)
+    {
+        base.FixedUpdate(owner);
+
+        if (owner.GetSteering.path != null && owner.GetSteering.path.IsFinished)
+            owner.GetFSM.ChangeState(Ogre.states["IdleState"]);
+    }
+
+    public override void Exit(Ogre owner)
+    {
+        base.Exit(owner);
+        Debug.Log("Exit GoToNewRegion...");
+        owner.GetSteering.PathFollowOff();
+    }
+}

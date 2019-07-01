@@ -1,0 +1,42 @@
+using UnityEngine;
+public class WanderingSheepState : State<Sheep>
+{
+    private static WanderingSheepState instance;
+    public static WanderingSheepState GetInstance()
+    {
+        if (instance == null)
+            instance = new WanderingSheepState();
+        return instance;
+
+
+    }
+
+    public override void Enter(Sheep owner)
+    {
+        base.Enter(owner);
+
+        owner.GetSteering.WanderOn();
+    }
+
+    public override void FixedUpdate(Sheep owner)
+    {
+        base.FixedUpdate(owner);
+
+        MovingEntity entity = owner.GetSteering.GetNearestEntity();
+        if (entity == null)
+            return;
+
+        float dist = Vector3.Distance(owner.transform.position, entity.transform.position);
+
+        if (dist > 2)
+            owner.GetFSM.ChangeState(Sheep.states["GroupSheepState"]);
+
+    }
+
+    public override void Exit(Sheep owner)
+    {
+        base.Exit(owner);
+
+        owner.GetSteering.WanderOff();
+    }
+}

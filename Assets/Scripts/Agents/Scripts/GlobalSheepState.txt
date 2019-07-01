@@ -1,0 +1,35 @@
+using UnityEngine;
+
+public class GlobalSheepState : State<Sheep>
+{
+    private static GlobalSheepState instance;
+    public static GlobalSheepState GetInstance()
+    {
+        if (instance == null)
+            instance = new GlobalSheepState();
+        return instance;
+    }
+
+    public override void Enter(Sheep owner)
+    {
+        base.Enter(owner);
+        owner.GetSteering.ObstacleAvoidenceOn();
+        owner.GetSteering.ThreatTrans = owner.Herde.Wolf.transform;
+
+        EntityMessenger.SubscribeToEntity(owner.Herde.Ogre, owner);
+    }
+
+    public override void FixedUpdate(Sheep owner)
+    {
+        base.FixedUpdate(owner);
+
+        ++owner.Hunger;
+
+        if (Vector3.Distance(owner.Position, owner.GetSteering.ThreatTrans.position) < owner.GetSteering.settings.panicDist)
+        {
+            owner.GetFSM.ChangeState(Sheep.states["FleeingSheepState"]);
+        }
+        else if (owner.Hunger > owner.HungerDissatisfier)
+            owner.GetFSM.ChangeState(Sheep.states["GrazingSheepState"]);
+    }
+}

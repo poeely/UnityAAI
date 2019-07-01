@@ -1,0 +1,56 @@
+
+using UnityEngine;
+
+public class FollowHerdeState : State<Wolf>
+{
+    private static FollowHerdeState instance;
+    public static FollowHerdeState GetInstance()
+    {
+            if (instance == null)
+                instance = new FollowHerdeState();
+            return instance;
+
+    }
+
+    Vector3 targetPos = new Vector3();
+
+    public override void Enter(Wolf owner)
+    {
+        base.Enter(owner);
+    }
+
+    public override void FixedUpdate(Wolf owner)
+    {
+        base.FixedUpdate(owner);
+
+        Sheep target = owner.Herde.CheckHerdCohesion();
+
+        if (target != null)
+        {
+            owner.Target = target;
+            owner.GetStateMachine.ChangeState(Wolf.states["RetrieveSheepState"]);
+        }
+
+        Vector3 centroid = owner.Herde.HerdeCentroid();
+        targetPos = centroid - owner.Herde.Ogre.Position;
+        targetPos.Normalize();
+        targetPos *= (owner.Herde.MaxHerdeRadius + 10.0f);
+        targetPos = centroid + targetPos;
+        owner.GetSteering.ArriveOn(targetPos);
+    }
+
+    public override void Exit(Wolf owner)
+    {
+        base.Exit(owner);
+        owner.GetSteering.ArriveOff();
+    }
+
+    public override void DrawGizmos(Wolf owner)
+    {
+        base.DrawGizmos(owner);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(targetPos, 1f);
+
+    }
+}

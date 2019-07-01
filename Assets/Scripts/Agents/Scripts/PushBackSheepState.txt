@@ -1,0 +1,39 @@
+
+using UnityEngine;
+public class PushBackSheepState: State<Wolf>
+{
+    private static PushBackSheepState instance;
+    public static PushBackSheepState GetInstance()
+    {
+            if (instance == null)
+                instance = new PushBackSheepState();
+            return instance;
+    }
+
+    public override void Enter(Wolf owner)
+    {
+        base.Enter(owner);
+    }
+
+    public override void FixedUpdate(Wolf owner)
+    {
+        base.FixedUpdate(owner);
+        Vector3 centroid = owner.Herde.HerdeCentroid();
+        Vector3 dir = owner.Target.Position - centroid;
+        dir.Normalize();
+
+        Vector3 desiredPos = owner.Target.Position + (dir * 8.0f);
+        owner.GetSteering.ArriveOn(desiredPos);
+
+        if (Vector3.Distance(owner.Target.Position, owner.Herde.HerdeCentroid()) < owner.Herde.MaxHerdeRadius)
+        {
+            owner.GetStateMachine.ChangeState(Wolf.states["FollowHerdeState"]);
+        }
+    }
+
+    public override void Exit(Wolf owner)
+    {
+        base.Exit(owner);
+        owner.GetSteering.ArriveOff();
+    }
+}

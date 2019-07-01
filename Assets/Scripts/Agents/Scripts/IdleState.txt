@@ -1,0 +1,26 @@
+using UnityEngine;
+
+public class IdleState : State<Ogre>
+{
+    private static IdleState instance;
+    public static IdleState GetInstance()
+    {
+         if (instance == null)
+             instance = new IdleState();
+         return instance;
+    }
+
+    public override void Enter(Ogre owner)
+    {
+        base.Enter(owner);
+
+        owner.Stop();
+        owner.GetCurrentRegion.StartLeeching();
+
+        MessageEventArgs e = new MessageEventArgs();
+        e.Sender = owner;
+        e.Message = Region.ARRIVED_AT_REGION;
+        EntityMessenger.SendMessage(e);
+        Debug.Log("[OGRE]: Idle.");
+    }
+}

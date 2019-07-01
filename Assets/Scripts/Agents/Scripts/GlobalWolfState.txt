@@ -1,0 +1,17 @@
+using UnityEngine;
+public class GlobalWolfState : State<Wolf>
+{
+    private static GlobalWolfState instance;
+    public static GlobalWolfState GetInstance()
+    {
+            if (instance == null)
+                instance = new GlobalWolfState();
+            return instance;
+    }
+
+    public override void Enter(Wolf owner)
+    {
+        base.Enter(owner);
+        owner.GetSteering.ObstacleAvoidenceOn();
+    }
+}

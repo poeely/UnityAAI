@@ -1,0 +1,13 @@
+Controls:
+
+R - Reload scene
+T - Switch between Target & View camera mode
+
+    Flycam:
+	W/A/S/D   - Move around
+	Mouse X/Y - Look around
+	Shift 	  - Speed up
+    Target Cam:
+	Scroll wheel: Increase/Decrease distance from target
+
+Y - Toggle region information (Red - Green shows how much resources it has)

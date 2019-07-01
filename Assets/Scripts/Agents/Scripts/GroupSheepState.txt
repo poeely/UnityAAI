@@ -1,0 +1,71 @@
+using UnityEngine;
+
+public class GroupSheepState : State<Sheep>
+{
+    private static GroupSheepState instance;
+    public static GroupSheepState GetInstance()
+    {
+
+        if (instance == null)
+            instance = new GroupSheepState();
+        return instance;
+
+    }
+
+    public override void Enter(Sheep owner)
+    {
+        base.Enter(owner);
+
+        owner.GetSteering.AlignmentOn();
+        owner.GetSteering.CohesionOn();
+        owner.GetSteering.SeperationOn();
+        owner.GetSteering.WanderOn();
+        owner.GetSteering.ArriveOn(owner.Herde.Ogre.transform);
+    }
+
+    public override void FixedUpdate(Sheep owner)
+    {
+        base.FixedUpdate(owner);
+
+        MovingEntity entity = owner.GetSteering.GetNearestEntity();
+        if (entity == null)
+        {
+            owner.GetFSM.ChangeState(Sheep.states["WanderingSheepState"]);
+            return;
+        }
+
+        float dist = Vector3.Distance(owner.transform.position, entity.transform.position);
+
+        if (dist < 1)
+            owner.GetFSM.ChangeState(Sheep.states["GrazingSheepState"]);
+    }
+
+
+    public override void HandleMsg(Sheep owner, MessageEventArgs e)
+    {
+        base.HandleMsg(owner, e);
+
+        if(e.Message == Region.ARRIVED_AT_REGION)
+        {
+            owner.GetSteering.ArriveOn(owner.Herde.Ogre.transform);
+        }
+        else if(e.Message == Region.FOUND_NEW_REGION)
+        {
+            owner.GetSteering.ArriveOff();
+        }
+    }
+
+
+    public override void Exit(Sheep owner)
+    {
+        base.Exit(owner);
+
+        owner.GetSteering.AlignmentOff();
+        owner.GetSteering.CohesionOff();
+        owner.GetSteering.SeperationOff();
+        owner.GetSteering.WanderOff();
+
+        owner.GetSteering.ArriveOff();
+        owner.Stop();
+    }
+}
